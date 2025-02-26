@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  cv-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cv-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - redis
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    develop:
+      watch:
+        - path: src/conf/
+          action: sync+restart
+          target: /app/conf/
+        - path: src/schema/
+          action: sync+restart
+          target: /app/schema/
+        - path: src/service/
+          action: sync+restart
+          target: /app/service/
+        - path: src/settings/
+          action: sync+restart
+          target: /app/settings/
+        - path: src/__init__.py
+          action: sync+restart
+          target: /app/__init__.py
+        - path: src/logger.py
+          action: sync+restart
+          target: /app/logger.py
+        - path: src/run_service.py
+          action: sync+restart
+          target: /app/run_service.py
+
+  redis:
+    image: redis:alpine
+    container_name: cv-service-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis-data:
