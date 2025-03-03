@@ -9,7 +9,7 @@ from service.models.base import BaseModel
 from service.pipelines.base import BasePipeline
 from service.prediction_strategies.base import BasePredictionStrategy
 from service.processing.base import BaseProcessor
-from service.utils import load_state_dict
+from service.utils import load_state_dict, model2cuda
 from settings.models import (
     ClassificationModelSettingsRegistry,
     DetectionModelSettingsRegistry,
@@ -168,6 +168,11 @@ class SingleModelPipeline(BasePipeline):
             )
 
             model = self._create_model_from_task(model_details, state_dict)
+
+            if model_details.model2cuda and self._device != "cpu":
+                self._logger.info("🔄 Moving model to CUDA device")
+                model = model2cuda(device=self._device, model=model)
+
             self._logger.info("✅ Model weights loaded successfully")
             return model
         except Exception as e:

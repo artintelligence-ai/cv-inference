@@ -3,18 +3,8 @@ import time
 from concurrent.futures.process import ProcessPoolExecutor
 from contextlib import asynccontextmanager
 
-import redis.asyncio as redis
-from fastapi import (
-    APIRouter,
-    Depends,
-    FastAPI,
-    File,
-    HTTPException,
-    Request,
-    UploadFile,
-)
-from fastapi_limiter import FastAPILimiter
-from fastapi_limiter.depends import RateLimiter
+from fastapi import APIRouter, FastAPI, File, Request, UploadFile
+from fastapi.exceptions import HTTPException
 
 from schema.schema import ClassificationOutput, DetectionOutput
 from service.config import (
@@ -125,22 +115,14 @@ app.include_router(router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def startup():
-    redis_url = settings.redis_url or "redis://localhost:6379/0"
-    redis_instance = redis.from_url(redis_url)
-    await FastAPILimiter.init(redis_instance)
+    # TODO: Redis and rate limiting code
+    pass
 
 
 @app.post(
     "/api/v1/classify",
     tags=["Vision"],
     response_model=ClassificationOutput,
-    dependencies=[
-        Depends(
-            RateLimiter(
-                times=settings.rate_limit_times, seconds=settings.rate_limit_seconds
-            )
-        )
-    ],
 )
 async def classify_image_endpoint(image: UploadFile = File(...)):
     """
@@ -169,13 +151,6 @@ async def classify_image_endpoint(image: UploadFile = File(...)):
     "/api/v1/detect",
     tags=["Vision"],
     response_model=DetectionOutput,
-    dependencies=[
-        Depends(
-            RateLimiter(
-                times=settings.rate_limit_times, seconds=settings.rate_limit_seconds
-            )
-        )
-    ],
 )
 async def detect_objects_endpoint(image: UploadFile = File(...)):
     """
@@ -206,13 +181,6 @@ async def detect_objects_endpoint(image: UploadFile = File(...)):
     "/api/v1/classwise-detect",
     tags=["Vision"],
     response_model=DetectionOutput,
-    dependencies=[
-        Depends(
-            RateLimiter(
-                times=settings.rate_limit_times, seconds=settings.rate_limit_seconds
-            )
-        )
-    ],
 )
 async def classwise_detect_objects_endpoint(
     image: UploadFile = File(...),

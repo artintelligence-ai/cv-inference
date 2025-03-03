@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     device: str = "cpu"
     local_weights: str = "data/weights"
 
+    # Config settings
+    config_name: str = "config"
+
     # Environment settings
     environment: str = "dev"
     log_level: str = "INFO"

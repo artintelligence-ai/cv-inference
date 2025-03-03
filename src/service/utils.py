@@ -40,7 +40,7 @@ def load_state_dict(
         logger.warning(
             f"⚠️ Model file not found at {model_path}. Should load from S3: {path2weights}"
         )
-        # Implement S3 download logic here
+        # TODO: Implement S3 download logic here
 
     if torch_ckpt:
         logger.info("🔄 Loading torch checkpoint")

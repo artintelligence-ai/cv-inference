@@ -8,56 +8,32 @@ image_classification:
 
   # Prediction
   prediction_settings:
-    preprocess_name: null
-    preprocess_args: {}
-    prediction_strategy: null
-    prediction_args:
-      conf: 0.25
-      imgsz: 640
-      save: true
-      project: /app/data/outputs
-      exist_ok: true
-      name: image_classification
-      verbose: false
-    postprocess_name: YoloClsPostProcessor
+    preprocess_name: ImagePreprocessor
+    preprocess_args:
+      normalization: false
+      img_size: 528
+      apply_transform: true
+      detection_mask: false
+    prediction_strategy: RotationPredictionStrategy
+    prediction_args: {}
+    postprocess_name: CustomClassificationPostProcessor
     postprocess_args:
-      top5: true
-  # prediction_settings:
-  #   preprocess_name: ImagePreprocessor
-  #   preprocess_args:
-  #     normalization: false
-  #     img_size: 528
-  #     apply_transform: true
-  #     detection_mask: false
-  #   prediction_strategy: RotationPredictionStrategy
-  #   prediction_args: {}
-  #   postprocess_name: CustomClassificationPostProcessor
-  #   postprocess_args:
-  #     labels_map:
-  #       0: "rotten"
-  #       1: "fresh"
-  #     include_all_probabilities: true
+      labels_map:
+        0: "rotten"
+        1: "fresh"
+      include_all_probabilities: true
 
   # Modeling
   model_settings:
     task: classify
-    model_class: YoloCls
-    model_name: yolo11n_product_classification.pt
-    bucket_name: ml-experiments-artifacts
-    model_path: wandb/grouped_yolo_product_class_26_10_16_57_60109/yolo11n_ft_e50_bs128_AdamW_lrs001_lrf001_dr04_randaugment_labelsmooth01_wanrm15_s02/weights/best.pt
-    torch_ckpt: false
+    model_class: EfficientNetB6
+    model_name: efficientnetb6_banana_fresh_classification.pth
+    bucket_name: old-models-bucket
+    model_path: mlflow/26/59a8288e92534e1e9f7aba5f48a6dac5/artifacts/model_pytorch/best_models/f1/state_dict.pth
+    torch_ckpt: true
     model2cuda: false
-    model_args: {}
-  # model_settings:
-  #   task: classify
-  #   model_class: EfficientNetB6
-  #   model_name: efficientnetb6_banana_fresh_classification.pth
-  #   bucket_name: old-models-bucket
-  #   model_path: mlflow/26/59a8288e92534e1e9f7aba5f48a6dac5/artifacts/model_pytorch/best_models/f1/state_dict.pth
-  #   torch_ckpt: true
-  #   model2cuda: false
-  #   model_args:
-  #     num_classes: 2
+    model_args:
+      num_classes: 2
 
 ###########################
 #### Object detection ####

@@ -10,8 +10,8 @@ services:
     ports:
       - "8000:8000"
     env_file: .env
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     volumes:
       - ./data:/app/data
     healthcheck:
@@ -22,7 +22,7 @@ services:
       start_period: 15s
     develop:
       watch:
-        - path: src/conf/
+        - path: configs/
           action: sync+restart
           target: /app/conf/
         - path: src/schema/
@@ -43,20 +43,19 @@ services:
         - path: src/run_service.py
           action: sync+restart
           target: /app/run_service.py
+#   redis:
+#     image: redis:alpine
+#     container_name: cv-service-redis
+#     restart: unless-stopped
+#     ports:
+#       - "6379:6379"
+#     volumes:
+#       - redis-data:/data
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "ping"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 3
 
-  redis:
-    image: redis:alpine
-    container_name: cv-service-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-volumes:
-  redis-data:
+# volumes:
+#   redis-data:

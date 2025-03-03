@@ -17,7 +17,7 @@ COPY pyproject.toml poetry.lock* ./
 RUN poetry config virtualenvs.create false
 
 # Copy application code
-COPY src/conf/ ./conf
+COPY configs/ ./conf
 COPY src/schema/ ./schema
 COPY src/service/ ./service
 COPY src/settings/ ./settings
@@ -30,12 +30,6 @@ COPY data/ ./data/
 
 # Install dependencies
 RUN poetry install --only main --no-interaction --no-ansi
-
-# Install additional dependencies
-COPY requirements.txt .
-COPY requirements-test.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir -r requirements-test.txt
 
 # Run the application
 CMD ["python", "run_service.py"]

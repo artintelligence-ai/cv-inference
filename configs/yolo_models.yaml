@@ -1,0 +1,112 @@
+################################
+#### Image classification ####
+################################
+image_classification:
+  enable: true
+  pipeline_class: SingleModelPipeline
+  logger_name: ClassificationPipelineLogger
+
+  # Prediction
+  prediction_settings:
+    preprocess_name: null
+    preprocess_args: {}
+    prediction_strategy: null
+    prediction_args:
+      conf: 0.25
+      imgsz: 640
+      save: true
+      project: /app/data/outputs
+      exist_ok: true
+      name: image_classification
+      verbose: false
+    postprocess_name: YoloClsPostProcessor
+    postprocess_args:
+      top5: true
+
+  # Modeling
+  model_settings:
+    task: classify
+    model_class: YoloCls
+    model_name: yolo11n_product_classification.pt
+    bucket_name: ml-experiments-artifacts
+    model_path: wandb/grouped_yolo_product_class_26_10_16_57_60109/yolo11n_ft_e50_bs128_AdamW_lrs001_lrf001_dr04_randaugment_labelsmooth01_wanrm15_s02/weights/best.pt
+    torch_ckpt: false
+    model2cuda: false
+    model_args: {}
+
+###########################
+#### Object detection ####
+###########################
+object_detection:
+  enable: true
+  pipeline_class: SingleModelPipeline
+  logger_name: DetectionPipelineLogger
+
+  # Prediction
+  prediction_settings:
+    preprocess_name: null
+    preprocess_args: {}
+    prediction_strategy: null
+    prediction_args:
+      conf: 0.25
+      imgsz: 640
+      save: true
+      project: /app/data/outputs
+      exist_ok: true
+      name: object_detection
+      verbose: false
+    postprocess_name: YoloPostProcessor
+    postprocess_args:
+      boxtype: xyxy
+      return_out: false
+
+  # Modeling
+  model_settings:
+    task: detect
+    model_class: YoloDet
+    model_name: yolo11s_product_detection.pt
+    bucket_name: ml-experiments-artifacts
+    model_path: wandb/yolo_pr_31_det_17_11_10_43_13781_synth_gr/yolo11s_ft_warmup5_100epoch_fr6_adamw_mixup0.3_crop1.0_groupped_fixed_bt64_synth_dfl3.5_cls1_blur0.1/weights/best.pt
+    torch_ckpt: false
+    model2cuda: false
+    model_args: {}
+
+#####################################
+#### Class-wise object detection ####
+#####################################
+classwise_object_detection:
+  enable: true
+  pipeline_class: MultiModelPipeline
+  logger_name: SpecializedDetectionPipelineLogger
+
+  # Prediction
+  prediction_settings:
+    citrus:
+      preprocess_name: null
+      preprocess_args: {}
+      prediction_strategy: null
+      prediction_args:
+        conf: 0.6
+        imgsz: 640
+        save: true
+        project: /app/data/outputs
+        exist_ok: true
+        name: classwise_object_detection
+        verbose: false
+        agnostic_nms: true
+      postprocess_name: YoloPostProcessor
+      postprocess_args:
+        boxtype: xyxy
+        return_out: false
+
+  # Modeling
+  model_settings:
+    citrus:
+      task: detect
+      model_class: YoloDet
+      model_name: yolov5n_citrus_fresh_detection.pt
+      bucket_name: ml-experiments-artifacts
+      model_path: wandb/citrus_fresh_detection/yolov5n_ft_e100_Adam_default_deblur_train/weights/best.pt
+      torch_ckpt: false
+      model2cuda: false
+      model_args: {}

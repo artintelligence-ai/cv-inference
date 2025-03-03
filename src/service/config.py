@@ -4,15 +4,16 @@ from hydra import compose, initialize
 from omegaconf import OmegaConf
 
 from settings.pipelines import (
-    BasePipelineSettings,
     SingleModelPipelineSettings,
     MultiModelPipelineSettings,
 )
 
+from settings.settings import settings
+
 logger = logging.getLogger(__name__)
 
 
-def hydra_args(config_name="config"):
+def hydra_args(config_name=settings.config_name):
     """
     Load configuration using Hydra.
 
@@ -33,24 +34,19 @@ def hydra_args(config_name="config"):
         raise
 
 
-# Load the configuration
 cfg = hydra_args()
 
-# Convert configurations to proper settings objects
 try:
-    # Get image classification settings
     classification_cfg = OmegaConf.to_container(
         cfg.get("image_classification", {}), resolve=True
     )
     classification_config = SingleModelPipelineSettings.parse_obj(classification_cfg)
 
-    # Get object detection settings
     detection_cfg = OmegaConf.to_container(
         cfg.get("object_detection", {}), resolve=True
     )
     detection_config = SingleModelPipelineSettings.parse_obj(detection_cfg)
 
-    # Get classwise detection settings
     classwise_cfg = OmegaConf.to_container(
         cfg.get("classwise_object_detection", {}), resolve=True
     )

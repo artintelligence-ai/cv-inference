@@ -5,7 +5,7 @@ from typing import Any, Optional
 import torch
 from allenai_common import Registrable
 
-from service.models import BaseModel
+from service.models.base import BaseModel
 from service.pipelines.base import BasePipeline
 from service.prediction_strategies.base import BasePredictionStrategy
 from service.processing.base import BaseProcessor
